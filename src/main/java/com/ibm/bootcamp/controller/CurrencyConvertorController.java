@@ -45,7 +45,7 @@ public class CurrencyConvertorController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(currencyConvertorService.createurrencyConvertor(currencyConvertor));
 	}
 	
-	@ApiOperation("This return the product for given country code")
+	@ApiOperation("This return the convertor factor for given country code")
 	@GetMapping("/") //localhost:8080/product?id=1
 	public ResponseEntity<CurrencyConvertor> getCurrencyConvertor(@RequestParam(value="countryCode")String countryCode) {
 		
@@ -88,6 +88,27 @@ Optional<CurrencyConvertor> currencyConvertor= currencyConvertorService.getCurre
 		}
 		
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+	}
+	
+	
+	@ApiOperation("This return the convertor factor for given country code")
+	@GetMapping("/conversionfactor/{countryCode}") //localhost:8080/currency-convertor/conversionfactor/102
+	public float getConversionFactor(@PathVariable(value="countryCode")String countryCode) {
+		
+		
+		System.out.println(" In the getConversionFactor /conversionfactor/{countryCode} ");
+		Optional<CurrencyConvertor> currencyConvertor= currencyConvertorService.getCurrencyConvertor(countryCode);
+		
+		if(currencyConvertor.isPresent()) {
+			
+			return currencyConvertor.get().getConversionFactor();
+		}else {
+			
+			return new Double(-1).floatValue();
+		}
+		
+		
+		
 	}
 }
 

@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: manage-conversionfactor-ms
+ 
+server:
+  port: 8080
+  
+     
+#  profiles:
+#    active: ${profile:devlopment}
+#    #  cloud:#    config:#      uri: ${configserver.url:http://localhost:8110}#       
