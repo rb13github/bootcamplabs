@@ -12,7 +12,7 @@
 	<artifactId>Bootcampexercise1</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Bootcampexercise1</name>
-	<description>lab excercise for Boot Camp Training - Fast Track Skill Upgrade – Microservices 1  : Handson Case Studies</description>
+	<description>lab excercise for Boot Camp Training - Fast Track Skill Upgrade – Microservices  : Handson Case Studies</description>
 
 
 		<properties>

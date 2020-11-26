@@ -31,7 +31,7 @@ public class ConvertCurrencyService {
 		return amount*conversionfactor;
 	}
 	
-	private float defaultCurrencyConvertorFactor(String name,float amoount)
+	private float defaultCurrencyConvertorFactor(String country,float amoount)
 	
 	{
 		System.out.println("in the defaultCurrencyConvertorFactor"+  1.0);
