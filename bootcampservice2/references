@@ -1,0 +1,21 @@
+
+
+Git repo - https://github.com/rb13github/bootcamplabs/tree/master
+
+openfeign(Ms client with Ribbon LB) - https://www.baeldung.com/spring-cloud-openfeign
+           https://dzone.com/articles/microservices-communication-feign-as-rest-client
+  
+  
+  Eureka (Naming server) - 
+https://www.tutorialspoint.com/spring_boot/spring_boot_eureka_server.htm
+https://www.springboottutorial.com/microservices-with-spring-boot-part-5-eureka-naming-server
+  
+           
+Hystrix (Circuit Breaker) - https://spring.io/guides/gs/circuit-breaker/
+  https://www.tutorialspoint.com/spring_boot/spring_boot_hystrix.htm
+  
+
+
+           
+Zipkin & Sleuth (Distributed tracing)  = https://howtodoinjava.com/microservices/spring-cloud-zipkin-sleuth-tutorial/
+ download instruction for Zipkin -https://github.com/openzipkin/zipkin/tree/master/zipkin-server
