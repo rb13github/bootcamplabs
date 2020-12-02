@@ -19,3 +19,26 @@ Hystrix (Circuit Breaker) - https://spring.io/guides/gs/circuit-breaker/
            
 Zipkin & Sleuth (Distributed tracing)  = https://howtodoinjava.com/microservices/spring-cloud-zipkin-sleuth-tutorial/
  download instruction for Zipkin -https://github.com/openzipkin/zipkin/tree/master/zipkin-server
+ ==============================docker ====================================
+ 
+docker build –t rb4docker/<imagename>:<version> .
+docker build –t rb4docker/spring-demo-app:v1.0 .
+
+docker build –t rb4docker/bootcamp_ms1_manage-coversion:v1.0 .
+
+docker build –t rb4docker/bootcamp_ms2_conversionfactor:v1.0 .
+ docker run -d -p 8091:8080 rb4docker/bootcamp_ms2_conversionfactor:v1.0
+ 
+docker login --username=rb4docker
+Password:<check local laptop>
+Docker push rb4docker/spring-demo-app:v1.1
+ 
+ 
+ host.docker.internal to point to the internal host of docker in windows
+ 
+ docker run -e "SPRING_PROFILES_ACTIVE=prod" -p 8080:8080 -t r.test.co/myapp:latest
+ 
+ 
+ docker run -d -p 8761:8761 rb4docker/eurekaserver:v1.0
+docker run -d -p 9411:9411 openzipkin/zipkin (from image directly)
+docker run -d -p 9411:9411 rb4docker /zipkin (From the zipkin.jar and image created with docker file

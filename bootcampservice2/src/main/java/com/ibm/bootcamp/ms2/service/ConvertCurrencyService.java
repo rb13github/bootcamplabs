@@ -25,7 +25,7 @@ public class ConvertCurrencyService {
 	public float convertCurrency(String country,float amount)
 	
 	{
-		System.out.println("in the Service country="+country + "  amount="+amount);
+		System.out.println("in the Service country calling via rest client using Feign="+country + "  amount="+amount);
 		float conversionfactor=this.convertorFactorClient.getConversionFactor(country);
 		
 		return amount*conversionfactor;
@@ -34,7 +34,7 @@ public class ConvertCurrencyService {
 	private float defaultCurrencyConvertorFactor(String country,float amoount)
 	
 	{
-		System.out.println("in the defaultCurrencyConvertorFactor"+  1.0);
+		System.out.println("in the defaultCurrencyConvertorFactor in fallback method using default factor"+  1.0);
 		
 		return (float) 1.0;
 	}
