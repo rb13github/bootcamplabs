@@ -2,8 +2,8 @@ spring:
   application:
     name: manage-conversionfactor-ms
  
-server:
-  port: 8081
+#server:
+#  port: 8081
   
      
 #  profiles:
