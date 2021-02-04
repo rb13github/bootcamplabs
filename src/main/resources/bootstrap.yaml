@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: bootcamp-service
+    
+  profiles:
+    active: ${profile:devlopment}
+           
