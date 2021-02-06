@@ -6,15 +6,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import com.ibm.bootcamp.filters.JwtRequestFilter;
 import com.ibm.bootcamp.repository.UserRepo;
 import com.ibm.bootcamp.service.MyUserDetailsService;
+import com.ibm.bootcamp.utils.JwtUtil;
 
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +27,7 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import static java.lang.String.format;
@@ -34,6 +37,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserRepo userRepo;
     
+    
+//    @Autowired
+//	private AuthenticationManager authenticationManager;
+
+    @Autowired
+	private JwtRequestFilter jwtRequestFilter;
+	
     @Autowired
     private MyUserDetailsService myUserDetailsService;
     
@@ -42,35 +52,39 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
     
     @Override
-    protected void configure(HttpSecurity http) throws Exception {  
+    protected void configure(HttpSecurity httpSecurity) throws Exception {  
     	
     	// Enable CORS and disable CSRF
-        http = http.cors().and().csrf().disable();
+    	httpSecurity = httpSecurity.cors().and().csrf().disable();
 
         // Set session management to stateless
-//        http = http
+//        httpSecurity = httpSecurity
 //                .sessionManagement()
 //                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 //                .and();
         
-    http.authorizeRequests()
+        httpSecurity.authorizeRequests()
  // Our public endpoints
     .antMatchers("/hello/**").permitAll()
+    .antMatchers("/authenticate").permitAll()
     .antMatchers("/h2-console/**").permitAll()
     .antMatchers("/web/**").permitAll()
     .antMatchers("/error").permitAll()
  // Our private endpoints
-    .anyRequest().authenticated()
-    .and()
-	.formLogin()
+    .anyRequest().authenticated().and()
+    
+    ////////////////// used if want to have login page, but if want API to be secure then not require
+	///.formLogin()
 		//.loginPage("/login")
-		.permitAll()
-		.and()
-	.logout()
-		.permitAll()
-		
+	///	.permitAll().and()
+	//.logout().permitAll().and()
+    ///////////////////////
+	.exceptionHandling().and().sessionManagement()
+	.sessionCreationPolicy(SessionCreationPolicy.STATELESS)	
 	;
     
+    //to apply filter 
+    httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 }
     
 //    @Override
@@ -119,19 +133,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     	System.out.println("in the SecurityConfig.configure:"+auth);
     	
-//    	auth.userDetailsService(username -> userRepo
-//            .findByName(username)
-//            .orElseThrow(
-//                () -> new UsernameNotFoundException(
-//                    format("User: %s, not found", username)
-//                )
-//            ))
-//    	.passwordEncoder(passwordEncoder())
-//    	;
+    	auth.userDetailsService(username -> userRepo
+            .findByUsername(username)
+            .orElseThrow(
+                () -> new UsernameNotFoundException(
+                    format("User: %s, not found", username)
+                )
+            ))
+    	.passwordEncoder(passwordEncoder())
+    	;
     	
-    	auth.userDetailsService(myUserDetailsService);
+    //	auth.userDetailsService(myUserDetailsService);
+    //	auth.passwordEncoder(passwordEncoder());
     	
     }
+    
+    
+/// following are the hashed value for "password" use the same in login
+//$2a$10$7bvyCx6OGn7rQnwgVnvbDOWagw5s3T.oslj5VYvyJWQcPvnBZ8uFa
+//$2a$10$E4FZjdsa8ohDmh6v6wwLlOd5dPbpPHhGCR7RrMdTXCHg2s2ZGcD4e
+//$2a$10$6ULHPNijESBKLBgjogwWt.rnu4By3nWrnSThnWqwMunQkzuVCds3m
 
     // Details omitted for brevity
 	
@@ -142,16 +163,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //    }
 
   //  SuppressWarnings("deprecation")
-    @Bean
-    public static NoOpPasswordEncoder passwordEncoder() {
-    return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
-    }
-//  @Bean
-// 	public PasswordEncoder passwordEncoder(){
-//  	System.out.println("in the SecurityConfig.passwordEncoder");
-// 		PasswordEncoder encoder = new BCryptPasswordEncoder();
-// 		return encoder;
-// 	}
+//    @Bean
+//    public static NoOpPasswordEncoder passwordEncoder() {
+//    return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
+//    }
+    //This AuthenticationManager is implicit in the before spring 2.0 and after 2.0 onwards it has to set explicitly
+    @Override
+	@Bean
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
+//    
+  @Bean
+ 	public PasswordEncoder passwordEncoder(){
+  	System.out.println("in the SecurityConfig.passwordEncoder");
+ 		PasswordEncoder encoder = new BCryptPasswordEncoder();
+ 		return encoder;
+ 	}
     
 //    @Bean
 //   	public PasswordEncoder passwordEncoder(){
@@ -163,7 +191,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
+//===================
+//$2a$10$ZLhnHxdpHETcxmtEStgpI./Ri1mksgJ9iDP36FmfMdYyVg9g0b2dq
+//
+//There are three fields separated by $:
+//
+//    The “2a” represents the BCrypt algorithm version
+//    The “10” represents the strength of the algorithm
+//    The “ZLhnHxdpHETcxmtEStgpI.” part is actually the randomly generated salt. Basically, the first 22 characters are salt. The remaining part of the last field is the actual hashed version of the plain text
+//
+//Also, be aware that the BCrypt algorithm generates a String of length 60
 
+
+
+//==============================
 //public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //
 //	
